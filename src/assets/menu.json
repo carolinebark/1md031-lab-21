@@ -1,0 +1,29 @@
+[
+  {
+    "Name": "Carros special",
+    "kCal": 2000,
+    "Lactose": true,
+    "Gluten": false,
+    "Picture": "https://media.istockphoto.com/photos/favourite-burger-toppings-picture-id469660542?k=20&m=469660542&s=612x612&w=0&h=1LfG2K-CgB78QgcXJllD8riD3WyPLFUfR0tfihlEmhw="
+  },
+
+
+
+  {
+    "Name": "Barros special",
+    "kCal": 1000,
+    "Lactose": false,
+    "Gluten": true,
+    "Picture": "https://img.koket.se/standard-mega/tommy-myllymakis-saftiga-cheeseburgare.jpg"
+  },
+
+
+
+  {
+    "Name": "CarroBarros special",
+    "kCal": 800,
+    "Lactose": true,
+    "Gluten": false,
+    "Picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9eIpvvHtJ6XJVBhwc_TH_riJfiUlLKnO_9w&usqp=CAU"
+  }
+]

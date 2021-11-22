@@ -1,6 +1,4 @@
 <template>
-
-
     <header>
       <div id="header">
         <img id="bild" src="img/02.jpg">
@@ -11,116 +9,89 @@
 
        <section id="hamburgare">
           <div class="välj">
-            <h2>Hamburgare</h2>
-            <p>Välj din burgare nedan</p>
+            <h2>Burgers</h2>
+            <p>Choose your burgers here:</p>
           </div>
+
           <div class="wrapper">
           <Burger v-for="burger in burgers"
                       v-bind:burger="burger"
-                      v-bind:key="burger.name"/>
-
-<!--
-          <div class="burger1">
-            <h2>Carros special</h2>
-            <img src="img/lule.jpg"  alt="Span"  style="height:200px;">
-            <ul>
-              <li>Innehåller <span class="ingredienser"> Laktos </span> </li>
-              <li>Pris <span class="ingredienser"> 135 kr </span> </li>
-            </ul>
+                      v-bind:key="burger.name"
+                      v-on:orderedBurger="addToOrder($event)"/>
           </div>
-
-
-          <div class="burger2">
-            <h2>Barros special</h2>
-            <img src="img/burger2.jpg" alt="Span"  style="height: 200px;">
-            <ul>
-              <li>Innehåller <span class="ingredienser"> Gluten</span> </li>
-              <li>Pris <span class="ingredienser"> 105 kr </span> </li>
-            </ul>
-          </div>
-
-
-
-          <div class="burger3">
-            <h2>CarroBarros special med extra allt</h2>
-            <img src="img/extra.jpg" alt="Span" style="height: 200px;" >
-            <ul>
-              <li>Innehåller <span class="ingredienser"> Gluten, Laktos</span> </li>
-              <li>Pris <span class="ingredienser"> 150 kr </span> </li>
-            </ul>
-          </div>
-        -->
-        </div>
-
-      </section>
+          </section>
 
 
 
       <section id="Kundinformation" >
-        <h3>Kundinformation</h3>
-        <p>Här uppger anger du nödvändig information</p>
-        <h4>Leveransinformation</h4>
-        <p>Fyll i dina uppgifter nedan</p>
+        <h3>Customer information</h3>
+        <h4>This is where you provide necessary infromation</h4>
+
         <p>
           <label for="fullname">Full name</label><br>
-          <input type="text" id="fullname" name="fn" required="required" placeholder="First- and Last name">
+          <input type="text" id="fullname" v-model="fn" required="required" placeholder="First- and Last name">
+
         </p>
         <label for="email">Email</label><br>
-        <input type="email" id="email" name="em" required="required" placeholder="E-mail address">
-        <p>
-          <label for="street">Street</label><br>
-          <input type="text" id="street" name="ln" placeholder="Street name">
-        </p>
-        <p>
-          <label for="house">House</label><br>
-          <input type="number" id="house" name="em" required="required" placeholder="House number">
-        </p>
+        <input type="email" id="email" v-model="ema" required="required" placeholder="E-mail address">
+
         <p>Payment options</p>
         <label for="recipient">Recipient</label><br>
-        <select id="recipient" name="rcp">
+        <select id="recipient" v-model="rcp">
           <option selected="selected">Kort</option>
           <option>Swish</option>
           <option>Kontanter</option>
           <option>Faktura</option>
         </select>
+
         <p>Gender</p>
 
         <div>
-          <input type="radio" id="Woman" name="kon" value="Woman" checked="checked">
-
+          <input type="radio" id="Woman" v-model="kon" value="Woman" checked="checked">
           <label for="huey">Woman</label>
         </div>
 
         <div>
-          <input type="radio" id="Man" name="kon" value="Man">
+          <input type="radio" id="Man" v-model="kon" value="Man">
           <label for="Man">Man</label>
         </div>
 
         <div>
-          <input type="radio" id="Non Bianary" name="kon" value="Non Bianary">
+          <input type="radio" id="Non Bianary" v-model="kon" value="Non Bianary">
           <label for="Non Bianary">Non Bianary</label>
         </div>
+          <p>Destination</p>
+        <div id="mapscroll">
+        <div id="map" v-on:click="setLocation">
+              <div v-bind:style="{left:this.location.x +'px', top:this.location.y+'px'}">
+                T
+              </div>
+          click here to choose your destination
+      </div>
+      </div>
+
       </section>
     </main>
 
-    <button type="submit">
-      <img src="img/knapp.png">
-    </button>
     <hr>
     <footer>
     </footer>
-    <div id="map" v-on:click="addOrder">
-      click here
-  </div>
+
+
+  <button type="submit" v-on:click="sendOrder">
+    <img src="img/knapp.png">
+
+  </button>
 </template>
 
 <script>
+import menu from '../assets/menu.json'
 import Burger from '../components/Burger.vue'
 import io from 'socket.io-client'
 
 const socket = io();
 
-function MenuItem(name, gluten, lactose, kCal, picture) {
+/*function MenuItem(name, gluten, lactose, kCal, picture) {
   this.Name = name;
   this.Gluten =gluten;
   this.Lactose=lactose;
@@ -134,6 +105,7 @@ const burger3= new MenuItem('CarroBarros special',true, true,3467,"https://encry
 
 const allBurgers=[burger1,burger2,burger3];
 console.log(allBurgers);
+*/
 
 
 
@@ -145,24 +117,61 @@ export default {
   },
   data: function () {
     return {
-      burgers:allBurgers
-
-    }
-  },
+      burgers:menu,
+      fn:'',
+      ema:'',
+      rcp:'Swish',
+      kon:'Woman',
+      location:{x:0,y:0},
+      orderedBurgers:{}
+  }
+},
   methods: {
     getOrderNumber: function () {
       return Math.floor(Math.random()*100000);
     },
-    addOrder: function (event) {
+
+    sendOrder: function(){
+      /*console.log(this.fn,this.ema,this.rcp,this.kon, this.orderedBurgers)*/
+      socket.emit("addOrder", { orderId: this.getOrderNumber(),
+        details: { x: this.location.x,
+          y: this.location.y },
+          orderItems: this.orderedBurgers,
+
+          custinf: {name:this.fn,
+          email:this.ema, payment:this.rcp, gender:this.kon}
+
+        },
+      );
+},
+
+
+    addToOrder: function (event) {
+  this.orderedBurgers[event.name] = event.amount;
+},
+
+  /*  addOrder: function (event) {
       var offset = {x: event.currentTarget.getBoundingClientRect().left,
         y: event.currentTarget.getBoundingClientRect().top};
         socket.emit("addOrder", { orderId: this.getOrderNumber(),
           details: { x: event.clientX - 10 - offset.x,
             y: event.clientY - 10 - offset.y },
             orderItems: ["Beans", "Curry"]
-          }
+          },
         );
-      }
+       this.location.x=event.clientX-10-offset.x
+       this.location.y=event.clientY-10-offset.y
+
+
+     },
+     */
+
+     setLocation: function (event) {
+       var offset = {x: event.currentTarget.getBoundingClientRect().left,
+         y: event.currentTarget.getBoundingClientRect().top};
+        this.location.x=event.clientX-10-offset.x
+        this.location.y=event.clientY-10-offset.y
+      },
     }
   }
   </script>
@@ -259,9 +268,34 @@ export default {
 
   }
 
-  #map {
-    width: 300px;
-    height: 300px;
-    background-color: red;
+
+    #map {
+      position: relative;
+      margin: 0;
+      padding: 0;
+      background: url(/img/polacks.jpg);
+      background-repeat: no-repeat;
+      width:1920px;
+      height: 1078px;
+      cursor: crosshair;
+    }
+
+    #map div {
+      position:absolute;
+      background: black;
+      color: white;
+      border-radius: 10px;
+      width:20px;
+      height:20px;
+      text-align: center;
+    }
+
+
+  #mapscroll{
+    overflow:scroll;
+    width: 400px;
+    height: 400px;
   }
+
+
   </style>
